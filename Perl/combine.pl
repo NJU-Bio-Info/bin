@@ -16,7 +16,7 @@ if (! defined $ARGV[0] || $ARGV[0] eq "--help" || $ARGV[0] eq "-h"){
 
 my $out = pop @ARGV;
 
-open my $out_fh, '>>', $out;
+open my $out_fh, '>', $out;
 while (<>){
 	print { $out_fh } $_;
 }
