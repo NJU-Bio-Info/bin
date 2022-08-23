@@ -16,7 +16,7 @@ Parameter:
 Version:
 	v 1.0.0
 Owner:
-	ShuiKM, skm\@smail.nju.edu.cn
+	Kun-ming Shui, skm\@smail.nju.edu.cn
 HELP
 }
 
