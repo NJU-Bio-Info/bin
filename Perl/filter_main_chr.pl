@@ -22,8 +22,8 @@ HELP
 
 unless (@ARGV == 2 && $ARGV[0] eq "--help" && $ARGV[0] eq "-h"){&usage; exit(-1);}
 
-open my $chr, '<', "/share/home/ShuiKM/reference/refdata-GRCh38-v38/chrsize.txt";
-open my $main, '>', "/share/home/ShuiKM/reference/refdata-GRCh38-v38/main_chrsize.txt";
+open my $chr, '<', "$ARGV[0]";
+open my $main, '>', "$ARGV[1]";
 
 while (<$chr>){
 	if (m/\bchr\d{1,2}\b/ || m/\bchr[MXY]\b/){
