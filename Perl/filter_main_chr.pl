@@ -20,7 +20,7 @@ Owner:
 HELP
 }
 
-unless (@ARGV == 2 && $ARGV[0] eq "--help" && $ARGV[0] eq "-h"){&usage; exit(-1);}
+if (@ARGV == 2 || $ARGV[0] eq "--help" || $ARGV[0] eq "-h"){&usage; exit(-1);}
 
 open my $chr, '<', "$ARGV[0]";
 open my $main, '>', "$ARGV[1]";
