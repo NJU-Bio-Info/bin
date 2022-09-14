@@ -12,6 +12,7 @@ Required tools:
 	- bedtools
 	- samtools
 	- featureCounts
+	- RseQC
 Usage:
 	RNAseq_Process_auto.sh -1 <r1.fq> -2 <r2.fq> -r <ref> -g <gtf> -b <bed> -n <processers> -p <prefix> -o <output>
 Options:
