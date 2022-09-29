@@ -1,0 +1,91 @@
+#!/usr/local/bin/Rscript
+
+suppressMessages(library(argparse))
+
+curve <- function(input, output){
+	data <- readr::read_tsv(file = input, show_col_types = FALSE)
+	plot <- ggplot2::ggplot(data = data, ggplot2::aes(x = total_reads/1e6, y = distinct_reads/1e6)) + 
+		ggplot2::geom_smooth(color = '#1b7837') + 
+		ggplot2::xlab(label = 'total reads (M)') + 
+		ggplot2::ylab(label = 'distinct reads (M)') +
+		ggplot2::theme_bw() +
+		ggplot2::theme(axis.title = ggplot2::element_text(color = 'black', size = 14),
+			       axis.text = ggplot2::element_text(color = 'black', size = 10))
+	ggplot2::ggsave(filename = output, plot = plot)
+}
+
+lc <- function(input, output){
+	data <- readr::read_tsv(file = input, show_col_types = FALSE)
+	plot <- ggplot2::ggplot(data = data) + 
+		ggplot2::geom_smooth(ggplot2::aes(x = TOTAL_READS/1e6, y = EXPECTED_DISTINCT/1e6), color = '#636363') +
+		ggplot2::geom_smooth(ggplot2::aes(x = TOTAL_READS/1e6, y = LOWER_0.95CI/1e6), color = '#edf8fb') +
+		ggplot2::geom_smooth(ggplot2::aes(x = TOTAL_READS/1e6, y = UPPER_0.95CI/1e6), color = '#88419d') +
+#		ggplot2::geom_ribbon(ggplot2::aes(x = TOTAL_READS, ymin = LOWER_0.95CI, ymax = UPPER_0.95CI), fill = '#a1d99b') +
+		ggplot2::xlab(label = 'total reads (M)') +
+		ggplot2::ylab(label = 'distinct reads (M)') +
+		ggplot2::theme_bw() +
+		ggplot2::theme(axis.title = ggplot2::element_text(color = 'black', size = 14),
+			       axis.text = ggplot2::element_text(color = 'black', size = 10))
+	
+	dataframe <- ggplot2::ggplot_build(plot)
+	df2 <- data.frame(x = dataframe$data[[2]]$x,
+			  ymin = dataframe$data[[2]]$y,
+			  ymax = dataframe$data[[3]]$y)
+	plot <- plot +
+		ggplot2::geom_ribbon(data = df2, ggplot2::aes(x = x, ymin = ymin, ymax = ymax), fill = '#a1d99b', alpha = .3)
+	ggplot2::ggsave(filename = output, plot = plot)
+}
+
+both <- function(c, lc, output){
+	c_file <- readr::read_tsv(file = c, show_col_types = FALSE)
+	lc_file <- readr::read_tsv(file = lc, show_col_types = FALSE)
+	plot <- ggplot2::ggplot() +
+		ggplot2::geom_smooth(data = lc_file, ggplot2::aes(x = TOTAL_READS/1e6, y = EXPECTED_DISTINCT/1e6), color = '#636363', lty = 3) +
+		ggplot2::geom_smooth(data = lc_file, ggplot2::aes(x = TOTAL_READS/1e6, y = LOWER_0.95CI/1e6), color = '#edf8fb', lty = 3) +
+		ggplot2::geom_smooth(data = lc_file, ggplot2::aes(x = TOTAL_READS/1e6, y = UPPER_0.95CI/1e6), color = '#88419d', lty = 3) +
+		ggplot2::xlab(label = 'total reads (M)') +
+		ggplot2::ylab(label = 'distinct reads (M)') +
+		ggplot2::theme_bw() +
+		ggplot2::theme(axis.title = ggplot2::element_text(color = 'black', size = 14),
+			       axis.text = ggplot2::element_text(color = 'black', size = 10))
+	dataframe <- ggplot2::ggplot_build(plot)
+	df2 <- data.frame(x = dataframe$data[[2]]$x,
+			  ymin = dataframe$data[[2]]$y,
+			  ymax = dataframe$data[[3]]$y)
+	plot <- plot +
+		ggplot2::geom_ribbon(data = df2, ggplot2::aes(x = x, ymin = ymin, ymax = ymax), fill = '#a1d99b', alpha = .3) +
+		ggplot2::geom_smooth(data = c_file, ggplot2::aes(x = total_reads/1e6, y = distinct_reads/1e6), color = '#1b7837') +
+		ggplot2::coord_cartesian(xlim = c(0, 2*max(c_file[[1]]/1e6)), ylim = c(0, 2*max(c_file[[2]])/1e6))
+	ggplot2::ggsave(filename = output, plot = plot)
+}
+
+parser <- ArgumentParser(prog = 'preseq2R',
+			 description = 'This is a R tool for you to visualize peqseq output.',
+			 epilog = 'Kun-ming Shui, skm@smail.nju.edu.cn')
+
+subparsers = parser$add_subparsers(dest = 'subparser', help='The file you pass to this tool.')
+
+#c_curve
+parser_c_curve = subparsers$add_parser('c_curve', help = 'preseq c_curve output')
+parser_c_curve$add_argument('--input', '-i', required = TRUE, nargs = 1, help = 'The output .txt file from peqseq c_curve result.')
+parser_c_curve$add_argument('--output', '-o', required = TRUE, help = 'The filename of pdf file produced by this tool.')
+
+#lc_extrap
+parser_lc_extrap = subparsers$add_parser('lc_extrap', help = 'preseq lc_extrap output')
+parser_lc_extrap$add_argument('--input', '-i', required = TRUE, nargs = 1, help = 'The output .txt file from peqseq lc_extrap result.')
+parser_lc_extrap$add_argument('--output', '-o', required = TRUE, help = 'The filename of pdf file produced by this tool.')
+
+#both
+parser_both = subparsers$add_parser('both', help = 'plot c_curve and lc_extrap output')
+parser_both$add_argument('--input', '-i', required = TRUE, nargs = 2, help = 'The output .txt file from peqseq c_curve and lc_extrap result (order should be c_curve lc_extrap).')
+parser_both$add_argument('--output', '-o', required = TRUE, help = 'The filename of pdf file produced by this tool.')
+
+args <- parser$parse_args()
+
+if (args$subparser == 'c_curve'){
+	curve(args$input, args$output)
+}else if (args$subparser == 'lc_extrap'){
+	lc(args$input, args$output)
+}else{
+	both(args$input[1], args$input[2], args$output)
+}
