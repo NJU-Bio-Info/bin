@@ -23,7 +23,7 @@ cat readsID.txt | sort | uniq -c > SeqID_check_tmp.txt
 
 num=`cat tmp.txt | awk '$1 != 1' | wc -l`
 
-if [ $num eq 0 ]
+if [ $num -eq 0 ]
 then
 	echo "There is no sequence name duplication."
 else
