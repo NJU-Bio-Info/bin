@@ -14,12 +14,12 @@ fi
 
 if [[ $1 =~ gz$ ]]
 then
-	zcat $1 | awk 'FNR%4==1' > readsID.txt
+	zcat $1 | awk 'FNR%4==1' > SeqID_check_readsID.txt
 else
-	cat $1 | awk 'FNR%4==1' > readsID.txt
+	cat $1 | awk 'FNR%4==1' > SeqID_check_readsID.txt
 fi
 
-cat readsID.txt | sort | uniq -c > tmp.txt
+cat readsID.txt | sort | uniq -c > SeqID_check_tmp.txt
 
 num=`cat tmp.txt | awk '$1 != 1' | wc -l`
 
@@ -32,4 +32,4 @@ else
 	cat tmp.txt | awk '$1 != 1' > SeqID_dup.txt
 fi
 
-rm readsID.txt tmp.txt
+rm SeqID_check_readsID.txt SeqID_check_tmp.txt
