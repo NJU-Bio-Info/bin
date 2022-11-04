@@ -16,8 +16,9 @@ Required tools:
 Usage:
 	RNAseq_Process_auto.sh -1 <r1.fq> -2 <r2.fq> -r <ref> -g <gtf> -b <bed> -n <processers> -p <prefix> -o <output>
 Options:
-	-1	the path of read1 fastq, can't be gzip. [PATH]
-	-2	the path of read2 fastq, can't be gzip. [PATH]
+	-1	the path of read1 fastq. [PATH]
+	-2	the path of read2 fastq. [PATH]
+		note: you should ensure read1 and read2 are of same type (ex. gz)
 	-r	the ref genome for STAR to do reads alignments. [PATH]
 	-g	the GTF annotation file for reads summary. [PATH]
 	-b	the genome annotation bed file used for determine library type. [PATH]
@@ -27,15 +28,16 @@ Options:
 Owner:
 	Kunming Shui, skm@smail.nju.edu.cn, Nanjing University.
 Last Modified:
-	2022-07-20
+	2022-09-28
 Modified Log:
 	2022-07-18	RNAseq_Process_auto.sh first released.[v 0.1.0]
 	2022-07-20	Modified a bug about the strand information determination.[v 0.1.1]
+	2022-09-28	Accept gzip file.[v 0.1.2]
 EOF
 }
 
 #version information
-version="v 0.1.1"
+version="v 0.1.2"
 
 if [ $# -eq 0 ] || [ $1 = "-h" ] || [ $1 = "--help" ]
 then
@@ -78,12 +80,31 @@ fi
 echo "The read1 file is $read1"
 echo "The read2 file is $read2"
 
-STAR --runThreadN $num \
-	--genomeDir $ref \
-	--readFilesIn $read1 $read2 \
-	--outSAMtype BAM SortedByCoordinate \
-	--outBAMsortingThreadN $[ $num/2 ] \
-	--outFileNamePrefix $out/$prefix
+#check if the file is gzipped
+if [[ $read1 =~ gz$ ]] && [[ $read2 =~ gz$ ]]
+then
+	gzip="yes"
+else
+	gzip="no"
+fi
+
+if [ $gzip = "no" ]
+then
+	STAR --runThreadN $num \
+		--genomeDir $ref \
+		--readFilesIn $read1 $read2 \
+		--outSAMtype BAM SortedByCoordinate \
+		--outBAMsortingThreadN $[ $num/2 ] \
+		--outFileNamePrefix $out/$prefix
+else
+	STAR --runThreadN $num \
+		--genomeDir $ref \
+		--readFilesIn $read1 $read2 \
+		--readFilesCommand zcat \
+		--outSAMtype BAM SortedByCoordinate \
+		--outBAMsortingThreadN $[ $num/2 ] \
+		--outFileNamePrefix $out/$prefix
+fi
 
 echo "=================== Filter out low quality alignments ==================="
 samtools view -q 255 -b -@ $num -o $out/$prefix.highquality.bam $out/${prefix}Ali*.bam
