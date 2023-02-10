@@ -133,10 +133,10 @@ if(!is.null(args$yMin) && !is.null(args$yMax)){
 }
 
 #--colors
-if(!is.null(args$colors) && length(args$colors) == gp.level){
+if(!is.null(args$colors) && length(args$colors) == length(gp.level)){
 	line_plot <- line_plot + 
 		scale_color_manual(values = args$colors)
-}else if(!is.null(args$colors) && length(args$colors) != gp.level){
+}else if(!is.null(args$colors) && length(args$colors) != length(gp.level)){
 	print("Warning: Your color number doesn't match group number, use default set instead!")
 }
 
