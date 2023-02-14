@@ -30,8 +30,8 @@ parser$add_argument('--refPointLabel', help = '[Only for reference-point mode] L
 parser$add_argument('--yMax', help = 'Maximum value for Y-axis, "None" by default.', type = 'double', default = NULL, required = FALSE)
 parser$add_argument('--yMin', help = 'Minimum value for Y-axis, "None" by default.', type = 'double', default = NULL, required = FALSE)
 parser$add_argument('--width', help = 'Width value for line plot, 0.7 by default', type = 'double', default = 0.7, required = FALSE)
-parser$add_argument('--plotHeight', help = 'Plot height in inch, 7 by default.', default = 5, type = 'double', required = FALSE)
-parser$add_argument('--plotWidth', help = 'Plot width in inch, 11 by default.', default = 7, type = 'double', required = FALSE)
+parser$add_argument('--plotHeight', help = 'Plot height in inch, 5 by default.', default = 5, type = 'double', required = FALSE)
+parser$add_argument('--plotWidth', help = 'Plot width in inch, 7 by default.', default = 7, type = 'double', required = FALSE)
 
 args <- parser$parse_args()
 
@@ -39,7 +39,7 @@ groups <- args$group
 FILES <- args$input
 
 #--group information
-if(length(groups) != length(FILES)) die('The group information does not equal with sample number.')
+if(length(groups) != length(FILES)) stop('The group information does not equal with sample number.')
 #-group level
 gp.level <- sapply(groups, FUN = function(group){
 	if(grepl(group, pattern = '[f|r]$')){
@@ -133,10 +133,10 @@ if(!is.null(args$yMin) && !is.null(args$yMax)){
 }
 
 #--colors
-if(!is.null(args$colors) && length(args$colors) == length(gp.level)){
+if(!is.null(args$colors) && (length(args$colors) == length(gp.level))){
 	line_plot <- line_plot + 
 		scale_color_manual(values = args$colors)
-}else if(!is.null(args$colors) && length(args$colors) != length(gp.level)){
+}else if(!is.null(args$colors) && (length(args$colors) != length(gp.level))){
 	print("Warning: Your color number doesn't match group number, use default set instead!")
 }
 
