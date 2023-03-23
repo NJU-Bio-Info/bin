@@ -22,13 +22,13 @@ parser$add_argument('--input', '-i', nargs = '+', help = 'the complexHeatmap out
 parser$add_argument('--output', '-o', help = 'the output file name, "deeptools2r.out.pdf" by default.', default = 'deeptool2r.out.pdf')
 parser$add_argument('--averageType', '-t', help = 'the type of stastics should be used for the profile, "mean" by default.', default = 'mean', choices = c('mean', 'max', 'min', 'median', 'sum'))
 parser$add_argument('--plotType', help = 'the plot type for profile, "line" by default.', default = 'line', choices = c('line', 'heatmap', 'both'))
-parser$add_argument('--colors', help = 'the colors used for plot lines, multiple colors should be separated by spaced and should be equal with group information size, "None" by default.', default = NULL, required = FALSE)
+parser$add_argument('--colors', nargs = '+', help = 'the colors used for plot lines, multiple colors should be separated by spaced and should be equal with group information size, "None" by default.', default = NULL, required = FALSE)
 parser$add_argument('--group', '-g', nargs = '+', help = 'group information for INPUT FILE, an important function of this tool is to combine profile data from forward and reverse strand. For example, if you have the file list: r1.fwd.tab r1.rev.tab r2.tab, you should pass "-g r1_f r1_r r2" to this argument. All in all, profile data from one sample but different strand should be taged with same group but different strand.', required = TRUE)
 parser$add_argument('--startLabel', help = '[Only for scale-regions mode] Label shown in the plot for the start of the region, "TSS" by default.', default = 'TSS', required = FALSE)
 parser$add_argument('--endLabel', help = '[Only for scale-regions mode] Label shown in the plot for the end of the region, "TES" by default.', default = 'TES', required = FALSE)
 parser$add_argument('--refPointLabel', help = '[Only for reference-point mode] Label shown in the plot for the center of the region', default = 'center', required = FALSE)
-parser$add_argument('--yMax', help = 'Maximum value for Y-axis, "None" by default.', type = 'double', default = NA, required = FALSE)
-parser$add_argument('--yMin', help = 'Minimum value for Y-axis, "None" by default.', type = 'double', default = NA, required = FALSE)
+parser$add_argument('--yMax', help = 'Maximum value for Y-axis, NA by default.', type = 'double', default = NULL, required = FALSE)
+parser$add_argument('--yMin', help = 'Minimum value for Y-axis, NA by default.', type = 'double', default = NULL, required = FALSE)
 parser$add_argument('--width', help = 'Width value for line plot, 0.7 by default', type = 'double', default = 0.7, required = FALSE)
 parser$add_argument('--plotHeight', help = 'Plot height in inch, 5 by default.', default = 5, type = 'double', required = FALSE)
 parser$add_argument('--plotWidth', help = 'Plot width in inch, 7 by default.', default = 7, type = 'double', required = FALSE)
@@ -55,11 +55,8 @@ gp.level <- unique(gp.level)
 data <- lapply(FILES, FUN = function(FILE){
 	       tmp <- read.table(file = FILE, header = FALSE, sep = "\t", skip = 3)
 	       gp <- groups[FILES == FILE]
-	       gp.info <- ifelse(grepl(gp, pattern = '[r|f]$'), 
-				 gp %>% 
-				 	strsplit(split = "_", fixed = TRUE) %>% 
-				 	sapply(FUN = function(string){string[1:length(string)-1]}) %>%
-					sapply(FUN = function(string){paste(string, collapse = "_")}),
+	       gp.info <- ifelse(grepl(gp, pattern = '_[r|f]$'), 
+				 gp %>% strsplit(., split = '_', fixed = TRUE) %>% unlist() %>% .[1:(length(.)-1)] %>% paste(., collapse = '_'),
 				 gp)
 	       tmp %>% mutate(group = rep(gp.info, nrow(tmp)))
 })
@@ -68,7 +65,7 @@ data <- purrr::reduce(data, rbind)
 #--tidy data
 data <- data %>% 
   group_by(group) %>% 
-  summarise_all(args$averageType) %>% 
+  summarise_all(args$averageType, na.rm = TRUE) %>% 
   pivot_longer(cols = starts_with('V'), names_to = 'index', values_to = 'signal')
 
 #--label
@@ -110,7 +107,10 @@ line_plot <- data %>%
 	geom_line(aes(group = group, color = group), linewidth = args$width) +
 	xlab(label = 'Position') +
 	ylab(label = 'Signal') +
-	theme_classic()
+	theme_classic() +
+	theme(axis.text = element_text(family = 'sans', color = 'black'),
+	      axis.ticks = element_line(color = 'black'),
+	      axis.title = element_text(family = 'sans', face = 'bold'))
 
 #-label
 if(bd.size != 0){
