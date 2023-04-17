@@ -118,7 +118,7 @@ Feel free to create issue or email to skm@smail.nju.edu.cn.
 
 > # superjoinr
 
-This R command tool can help you fast join two data in shell command manner, rather than use ```join``` of shell, which need sort the data before.
+This R command tool can help you fast join two data in shell command manner, rather than use ```join``` of shell, which need sort the data before use it.
 
 ## Usage
 
@@ -198,7 +198,23 @@ or
 ```
 cat test1.txt | /path/to/superjoinr --input - test2.txt --field1 1 --field2 1 --keep > test.txt
 ```
-
+- if you want to only print the join field once, just discard ```--keep``` argument
+```
+/path/to/superjoinr --input test1.txt test2.txt --field1 1 --field2 1
+```
+output:
+```
+```
+chr2	100	120	feature.2	.	-	15	17	feature.1	.	+
+```
+- use ```,``` as output delimiter
+```
+superjoinr --input test1.txt test2.txt --field1 1 --field2 1 --keep --delimiter ,
+```
+output:
+```
+chr2,100,120,feature.2,.,-,chr2,15,17,feature.1,.,+
+```
 ## Bug Report
 
 Feel free to create issue or email to skm@smail.nju.edu.cn.
