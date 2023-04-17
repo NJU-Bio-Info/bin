@@ -198,3 +198,7 @@ or
 ```
 cat test1.txt | /path/to/superjoinr --input - test2.txt --field1 1 --field2 1 --keep > test.txt
 ```
+
+## Bug Report
+
+Feel free to create issue or email to skm@smail.nju.edu.cn.
