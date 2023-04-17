@@ -31,6 +31,10 @@ parser$add_argument('--delimiter', '-d',
 		    help = 'use CHAR as output delimiter, table by default', 
 		    default = "\t", 
 		    required = FALSE)
+parser$add_argument('--keep', '-k',
+		    help = 'preserve the join FIELD from both file 1 and 2 in the output or not, not preserve by default',
+		    action = 'store_true',
+		    required = FALSE)
 parser$add_argument('--type', '-t', 
 		    choices = c('inner', 'left', 'right', 'full'), 
 		    default = 'inner', 
