@@ -127,7 +127,7 @@ This R command tool can help you fast join two data in shell command manner, rat
 ```
 ```
 usage: superjoinr [-h] [--version] --input INPUT INPUT --field1 FIELD1
-                  --field2 FIELD2 [--delimiter DELIMITER]
+                  --field2 FIELD2 [--delimiter DELIMITER] [--keep]
                   [--type {inner,left,right,full}] [--output OUTPUT]
 
 Similar function with join tool in shell, but faster and more convenient
@@ -144,6 +144,8 @@ optional arguments:
                         join on this FIELD of file 2
   --delimiter DELIMITER, -d DELIMITER
                         use CHAR as output delimiter, table by default
+  --keep, -k            preserve the join FIELD from both file 1 and 2 in the
+                        output or not, not preserve by default
   --type {inner,left,right,full}, -t {inner,left,right,full}
                         join type, note that full may have bug!
   --output OUTPUT, -o OUTPUT
@@ -162,13 +164,37 @@ Kun-Ming Shui, skm@smail.nju.edu.cn
 ## Example
 
 Input data:
-- test1.txt
+**test1.txt**
 ```
-chr1  10  11  feature.1 . +
-chr2  100 120 feature.2 . -
+chr1	10	11	feature.1	.	+
+chr2	100	120	feature.2	.	-
 ```
-- test2.txt
+**test2.txt**
 ```
-chr1  10  11  feature.1 . +
-chr2  100 120 feature.2 . -
+chr2	15	17	feature.1	.	+
+chr3	100	120	feature.3	.	-
+```
+- join by column 1 (chr)
+```
+/path/to/superjoinr --input test1.txt test2.txt --field1 1 --field2 1 --keep
+```
+output:
+```
+chr2	100	120	feature.2	.	-	chr2	15	17	feature.1	.	+
+```
+- use pipeline as input
+```
+cat test1.txt | /path/to/superjoinr --input - test2.txt --field1 1 --field2 1 --keep
+```
+output:
+```
+chr2	100	120	feature.2	.	-	chr2	15	17	feature.1	.	+
+```
+- store the result in target file
+```
+/path/to/superjoinr --input test1.txt test2.txt --field1 1 --field2 1 --keep --output test.txt
+```
+or
+```
+cat test1.txt | /path/to/superjoinr --input - test2.txt --field1 1 --field2 1 --keep > test.txt
 ```
