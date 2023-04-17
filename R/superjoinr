@@ -22,11 +22,13 @@ parser$add_argument('--input', '-i',
 		    help = 'the input files, remove the header line. If you use standard output from a pipeline, use "-" to stand', 
 		    required = TRUE)
 parser$add_argument('--field1', '-x', 
-		    help = 'join on this FIELD of file 1', 
-		    required = TRUE)
+		    help = 'join on this FIELD of file 1, first column by default',
+		    default = '1',
+		    required = FALSE)
 parser$add_argument('--field2', '-y', 
-		    help = 'join on this FIELD of file 2', 
-		    required = TRUE)
+		    help = 'join on this FIELD of file 2, first column by default',
+		    default = '1',
+		    required = FALSE)
 parser$add_argument('--delimiter', '-d', 
 		    help = 'use CHAR as output delimiter, table by default', 
 		    default = "\t", 
