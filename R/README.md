@@ -204,7 +204,6 @@ cat test1.txt | /path/to/superjoinr --input - test2.txt --field1 1 --field2 1 --
 ```
 output:
 ```
-```
 chr2	100	120	feature.2	.	-	15	17	feature.1	.	+
 ```
 - use ```,``` as output delimiter
