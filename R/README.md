@@ -85,7 +85,7 @@ suppressMessages(library(patchwork))
 suppressMessages(library(pheatmap))
 ```
 
-> # Example:
+## Example
 
 Input files: GRO-seq data, strand specific data
 
@@ -107,11 +107,68 @@ deeptools2r.R --input Hela_1.f.txt Hela_1.r.txt Hela_2.f.txt Hela_2.r.txt \
 
 ![image](https://user-images.githubusercontent.com/92142596/227109389-772daf15-8ac5-4369-b7b1-5ec377814ff6.png)
 
-> # Additional information
+## Additional information
 
 Due to the ggplot2 limits [click here](https://github.com/tidyverse/ggplot2/issues/2907), until now, 
 if you want to specify the y-axis range, you must set ```--yMin``` and ```--yMax``` at the same time.
 
-> # Bug Report
+## Bug Report
 
 Feel free to create issue or email to skm@smail.nju.edu.cn.
+
+> # superjoinr
+
+This R command tool can help you fast join two data in shell command manner, rather than use ```join``` of shell, which need sort the data before.
+
+## Usage
+
+```shell
+/path/to/superjoinr --help
+```
+```
+usage: superjoinr [-h] [--version] --input INPUT INPUT --field1 FIELD1
+                  --field2 FIELD2 [--delimiter DELIMITER]
+                  [--type {inner,left,right,full}] [--output OUTPUT]
+
+Similar function with join tool in shell, but faster and more convenient
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version, -v         show program's version number and exit
+  --input INPUT INPUT, -i INPUT INPUT
+                        the input files, remove the header line. If you use
+                        standard output from a pipeline, use "-" to stand
+  --field1 FIELD1, -x FIELD1
+                        join on this FIELD of file 1
+  --field2 FIELD2, -y FIELD2
+                        join on this FIELD of file 2
+  --delimiter DELIMITER, -d DELIMITER
+                        use CHAR as output delimiter, table by default
+  --type {inner,left,right,full}, -t {inner,left,right,full}
+                        join type, note that full may have bug!
+  --output OUTPUT, -o OUTPUT
+                        the output filename, if not set, superjoinr will print
+                        the result to stdout
+
+Kun-Ming Shui, skm@smail.nju.edu.cn
+```
+
+## Dependency
+
+- argsparse
+- dplyr
+- vroom
+
+## Example
+
+Input data:
+- test1.txt
+```
+chr1  10  11  feature.1 . +
+chr2  100 120 feature.2 . -
+```
+- test2.txt
+```
+chr1  10  11  feature.1 . +
+chr2  100 120 feature.2 . -
+```
