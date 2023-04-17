@@ -1,0 +1,66 @@
+#!/usr/local/bin/Rscript
+
+#Author: Kun-Ming Shui, skm@smail.nju.edu.cn
+#Contribution list: ...
+
+#Log:
+#	- 2023/4/13	v1.0.0 superjoinr first released.
+
+suppressMessages(library(dplyr))
+suppressMessages(library(argparse))
+suppressMessages(library(vroom))
+
+parser <- ArgumentParser(prog = 'superjoinr',
+                         description = 'Similar function with join tool in shell, but faster and more convenient',
+                         epilog = 'Kun-Ming Shui, skm@smail.nju.edu.cn')
+
+parser$add_argument('--version', '-v', 
+                    action = 'version', 
+		    version = '%(prog)s 1.0.0')
+parser$add_argument('--input', '-i', 
+		    nargs = 2, 
+		    help = 'the input files, remove the header line. If you use standard output from a pipeline, use "-" to stand', 
+		    required = TRUE)
+parser$add_argument('--field1', '-x', 
+		    help = 'join on this FIELD of file 1', 
+		    required = TRUE)
+parser$add_argument('--field2', '-y', 
+		    help = 'join on this FIELD of file 2', 
+		    required = TRUE)
+parser$add_argument('--delimiter', '-d', 
+		    help = 'use CHAR as output delimiter, table by default', 
+		    default = "\t", 
+		    required = FALSE)
+parser$add_argument('--type', '-t', 
+		    choices = c('inner', 'left', 'right', 'full'), 
+		    default = 'inner', 
+		    required = FALSE,
+		    help = 'join type, note that full may have bug!')
+parser$add_argument('--output', '-o',
+		    help = 'the output filename, if not set, superjoinr will print the result to stdout',
+		    required = FALSE,
+		    default = NULL)
+
+args <- parser$parse_args()
+
+data.input <- lapply(args$input, FUN = function(X){
+		if(X == "-"){
+			vroom(stdin(), col_names = FALSE, show_col_types = FALSE)
+		}else{
+			vroom(file = X, col_names = FALSE, show_col_types = FALSE)
+		}
+	})
+
+join.function = paste(args$type, 'join', sep = "_")
+
+join.1 <- paste0('X', args$field1)
+join.2 <- paste0('X', args$field2)
+
+join.data <- do.call(what = join.function, args = list(x = data.input[[1]], y = data.input[[2]], by = setNames(join.2, join.1)))
+
+#out
+if(is.null(args$output)){
+	vroom_write(join.data, stdout(), col_names = FALSE, delim = args$delimiter)
+}else{
+	vroom_write(join.data, args$output, col_names = FALSE, delim = args$delimiter)
+}
