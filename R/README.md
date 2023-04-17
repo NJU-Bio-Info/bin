@@ -126,8 +126,8 @@ This R command tool can help you fast join two data in shell command manner, rat
 /path/to/superjoinr --help
 ```
 ```
-usage: superjoinr [-h] [--version] --input INPUT INPUT --field1 FIELD1
-                  --field2 FIELD2 [--delimiter DELIMITER] [--keep]
+usage: superjoinr [-h] [--version] --input INPUT INPUT [--field1 FIELD1]
+                  [--field2 FIELD2] [--delimiter DELIMITER] [--keep]
                   [--type {inner,left,right,full}] [--output OUTPUT]
 
 Similar function with join tool in shell, but faster and more convenient
@@ -139,9 +139,9 @@ optional arguments:
                         the input files, remove the header line. If you use
                         standard output from a pipeline, use "-" to stand
   --field1 FIELD1, -x FIELD1
-                        join on this FIELD of file 1
+                        join on this FIELD of file 1, first column by default
   --field2 FIELD2, -y FIELD2
-                        join on this FIELD of file 2
+                        join on this FIELD of file 2, first column by default
   --delimiter DELIMITER, -d DELIMITER
                         use CHAR as output delimiter, table by default
   --keep, -k            preserve the join FIELD from both file 1 and 2 in the
