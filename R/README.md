@@ -1,6 +1,6 @@
 > # deeptools2r.R
 
-This R command tool can help you visualize the computeMatrix output, especially for the strand specific data.
+This R command tool can help you visualize the computeMatrix output, especially useful for the strand specific data.
 
 ## Usage:
 
