@@ -217,3 +217,22 @@ chr2,100,120,feature.2,.,-,chr2,15,17,feature.1,.,+
 ## Bug Report
 
 Feel free to create issue or email to skm@smail.nju.edu.cn.
+
+> # cutversion.R
+
+This is a R function that can help you remove version information in ensembl id. When we do gene function enrichment analysis, we always need to use ensembl id without version number as input and for this reason, cutversion.R is produced.
+
+## Example
+
+- INPUT: a character vector containing ensembl id with version number
+
+```r
+source('/path/to/cutversion.R') #load function
+genes <- c('ENSG00000125346.10', 'ENSG00000376189.1')
+cut_version(genes)
+#[1] "ENSG00000125346" "ENSG00000376189"
+```
+
+## Bug Report
+
+Feel free to create issue or email to skm@smail.nju.edu.cn.
